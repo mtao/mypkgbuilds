@@ -1,0 +1,48 @@
+# Contributor: Jakub Schmidtke <sjakub-at-gmail-dot-com>
+
+pkgname=amarok-local
+conflicts=('amarok' 'amarok2' 'amarok-git')
+pkgver=20120309
+pkgrel=1
+pkgdesc="The powerful music player for KDE - GIT version"
+arch=("i686" "x86_64")
+url="http://amarok.kde.org"
+license=('GPL2' 'LGPL2' 'FDL')
+depends=('kdebase-runtime' 'mysql' 'qtscriptgenerator' 'taglib-extras'
+        'liblastfm' 'ffmpeg' 'libofa' 'qjson')
+makedepends=('pkgconfig' 'automoc4' 'cmake' 'libgpod' 'libmtp' 'loudmouth'
+        'libmygpo-qt' 'git')
+optdepends=("libgpod: support for Apple iPod audio devices"
+        "libmtp: support for portable media devices"
+        "loudmouth: backend needed by mp3tunes for syncing"
+        "ifuse: support for Apple iPod Touch and iPhone"
+        "libmygpo-qt: gpodder.net Internet Service")
+install="${pkgname}.install"
+
+
+source=()
+md5sums=()
+pkgrealname=amarok
+
+build() {
+  msg "Copying from my local amarok instance..."
+  rsync -r --exclude=.git /home/mtao/git/${pkgrealname}/* ${srcdir}
+  msg "Starting make..."
+
+  rm -rf ${srcdir}/build
+  mkdir -p ${srcdir}/build
+  cd ${srcdir}/build || return 1
+
+  cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=`kde4-config --prefix`
+  make -j9
+}
+
+package(){
+  cd ${srcdir}/build
+  make DESTDIR=${pkgdir} install
+
+  ## One of libraries for strigi casuses problems with m4v files
+  #rm -rf ${pkgdir}/usr/lib/strigi
+}

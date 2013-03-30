@@ -1,0 +1,58 @@
+
+pkgname=multiscreenmanga
+pkgver=20130330
+pkgrel=1
+pkgdesc="A simplistic multi-screen comic book reader"
+arch=("i686" "x86_64")
+url="http://github.com/mtao/MultiscreenManga"
+license=()
+depends=('kdebase-runtime' 
+        'poppler-qt' 'qt4')
+makedepends=('pkgconfig' 'automoc4' 'cmake' 'git')
+optdepends=()
+install="${pkgname}.install"
+
+_gitroot="git://github.com/mtao/MultiscreenManga.git"
+_gitname="MultiscreenManga"
+
+source=()
+md5sums=()
+
+build() {
+  cd ${srcdir}
+  msg "Connecting to GIT server...."
+
+  if [ -d ${_gitname}/.git ] ; then
+    cd ${_gitname}
+
+    # Change remote url to anongit
+    if [ -z $( git branch -v | grep github ) ] ; then
+        git remote set-url origin ${_gitroot}
+    fi
+    
+    git pull origin
+    msg "The local files are updated."
+  else
+    git clone ${_gitroot} ${_gitname}
+  fi
+
+  msg "GIT checkout done or server timeout"
+  msg "Starting make..."
+
+  rm -rf ${srcdir}/build
+  mkdir -p ${srcdir}/build
+  cd ${srcdir}/build || return 1
+
+  cmake ../${_gitname} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package(){
+  cd ${srcdir}/build
+  make DESTDIR=${pkgdir} install
+
+  ## One of libraries for strigi casuses problems with m4v files
+  #rm -rf ${pkgdir}/usr/lib/strigi
+}

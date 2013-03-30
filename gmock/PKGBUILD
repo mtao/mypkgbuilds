@@ -1,0 +1,57 @@
+# Maintainer: Niels Martignène <niels.martignene@gmail.com>
+# Contributor: Xiao-Long Chen <chenxiaolong@cxl.epac.to>
+
+pkgname=googlemock
+_pkgacro=gmock
+pkgver=1.6.0
+pkgrel=1
+pkgdesc="Google Mock (GMock) - A library for writing and using C++ mock classes"
+arch=('i686' 'x86_64')
+url="http://code.google.com/p/googlemock/"
+license=('BSD')
+options=('!libtool')
+depends=('googletest')
+makedepends=('python2')
+optdepends=('python2: gmock_gen.py support')
+conflicts=('googlemock-svn')
+provides=('googlemock')
+source=(https://$pkgname.google.com/files/$_pkgacro-$pkgver.zip)
+sha1sums=(4702e98af194d320a915f1e6d2532a32b280819e)
+
+
+
+build() {
+    cd $_pkgacro-$pkgver $srcdir
+    ls
+
+    find -name "*.py" -exec sed -i 's/#!\/usr\/bin\/env python/#!\/usr\/bin\/env python2/' {} \;
+
+    autoreconf -fvi
+    ./configure --prefix=/usr --enable-external-gtest
+    make
+}
+
+package() {
+    cd ${srcdir}/$_pkgacro-$pkgver
+    pwd
+
+    mkdir -pm 0755 "${pkgdir}/usr/lib"
+    install -m 0644 lib/.libs/libgmock{,_main}.so "${pkgdir}/usr/lib"
+    
+
+    mkdir -pm 0755 "${pkgdir}/usr/include/gmock/internal"
+    install -m 0644 include/gmock/*.h "${pkgdir}/usr/include/gmock"
+    install -m 0644 include/gmock/internal/*.h "${pkgdir}/usr/include/gmock/internal"
+
+    mkdir -pm 0755 ${pkgdir}/usr/share/{doc,licenses}/${pkgname}
+#    install -m 0644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}"
+    install -m 0644 CHANGES CONTRIBUTORS README "${pkgdir}/usr/share/doc/${pkgname}"
+
+    mkdir -pm 0755 "${pkgdir}/usr/bin/" "${pkgdir}/${_sitepackages}/cpp"
+    install -m 0755 "scripts/generator/gmock_gen.py" "${pkgdir}/usr/bin"
+    install -m 0644 scripts/generator/cpp/*.py "${pkgdir}/${_sitepackages}/cpp"
+
+    mkdir -pm 0755 ${pkgdir}/usr/src/gmock/{src,include}
+    install -m 0644 src/*.cc "${pkgdir}/usr/src/gmock/src"
+    ln -s ../../../include/gmock "${pkgdir}/usr/src/gmock/include/gmock"
+}
