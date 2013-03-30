@@ -1,0 +1,66 @@
+pkgname=mtaoinstall
+pkgver=1
+pkgrel=1
+arch=('x86_64' 'i386')
+pkgdesc="Meta package that maintains the list of default software I want"
+depends=(
+        #system
+        'openssh' 
+        'pulseaudio' 
+        'phonon'
+        'htop'
+        'unrar'
+        'unzip'
+        'vim'
+        'screen'
+        'ntp'
+        'nfs-utils'
+        'p7zip'
+        'pavucontrol'
+        'xorg-server'
+        'rsync'
+
+
+        #libs
+        'qt4' 
+
+        #media
+        'amarok' 
+        'mplayer'
+        'smplayer'
+        'feh'
+
+        #userland
+        'xmonad'
+        'dmenu'
+        'dzen2'
+
+        #devland
+        'chromium'
+        'qtcreator'
+#        'sublime-text'
+        'clang' 
+        'gcc'
+        'cmake'
+        'meld'
+        'mercurial'
+        'subversion'
+        'git'
+        'mendeleydesktop'
+        'texlive-core'
+
+        #apps
+        'tor'
+        'transmission-qt' 
+        'chromium'
+        )
+        
+source=()
+md5sums=()
+
+build(){
+    msg "Wololo"
+}
+package(){
+    msg "Wololo"
+}
