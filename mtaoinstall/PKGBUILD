@@ -51,6 +51,7 @@ depends=(
 
         #apps
         'tor'
+        'tor-browser-en'
         'transmission-qt' 
         'chromium'
         )
